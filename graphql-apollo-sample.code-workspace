@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "server"
+		},
+		{
+			"path": "services\\user-service"
+		},
+		{
+			"path": "services\\trip-service"
+		}
+	],
+	"settings": {
+		"debug.internalConsoleOptions": "neverOpen"
+	}
+}
