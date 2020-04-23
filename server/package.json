@@ -8,6 +8,9 @@
     "prestart": "npm run build && func extensions install",
     "start:host": "func start",
     "start": "npm-run-all --parallel start:host watch",
+    "start:services": "npm-run-all --parallel start:user-service start:trip-service",
+    "start:user-service": "cd ../services/user-service/ && func host start",
+    "start:trip-service": "cd ../services/trip-service/ && func host start",
     "test": "echo \"No tests yet...\""
   },
   "description": "",

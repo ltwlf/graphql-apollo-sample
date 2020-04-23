@@ -1,7 +1,7 @@
 import { RESTDataSource } from "apollo-datasource-rest"
 import * as isEmail from 'isemail'
 
-export type DBTrip = {
+export type Trip = {
   id: string
   launchId: string
   userId: string
@@ -14,7 +14,7 @@ export class TripAdapter extends RESTDataSource {
   }
 
   async allTrips() {
-    return await this.get<DBTrip[]>('trips')
+    return await this.get<Trip[]>('trips')
   }
 
   async bookTrips({ launchIds }) {
@@ -41,34 +41,14 @@ export class TripAdapter extends RESTDataSource {
   }
 
   async cancelTrip({ launchId }) {
+
     const userId = this.context.user.id;
-    // return !!this.store.trips.destroy({ where: { userId, launchId } });
-  }
 
-  /*
-  async getLaunchIdsByUser() {
-
-  const userId = this.context.user.id;
-  const found = await this.store.trips.findAll({
-    where: { userId },
-  });
-  return found && found.length
-    ? found.map(l => l.dataValues.launchId).filter(l => !!l)
-    : [];
+    const trip = (await this.allTrips()).filter(t => t.launchId === launchId && t.userId === userId)[0]
     
+    await this.delete(`trips/${trip.id}`)
+
+    return true
   }
-  */
 
-      /*
-  async isBookedOnLaunch({ launchId }) {
-
-  if (!this.context || !this.context.user) return false;
-  const userId = this.context.user.id;
-  const found = await this.store.trips.findAll({
-    where: { userId, launchId },
-  });
-  return found && found.length > 0;
-
-  }
-    */
 }

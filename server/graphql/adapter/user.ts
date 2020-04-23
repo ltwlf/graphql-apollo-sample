@@ -1,7 +1,7 @@
 import { RESTDataSource } from "apollo-datasource-rest"
 import * as isEmail from 'isemail'
 
-export type DBUser = {
+export type User = {
   id: string
   email: string
 }
@@ -12,17 +12,17 @@ export class UserAdapter extends RESTDataSource {
     this.baseURL = "http://localhost:7072/api/"
   }
 
-  async findOrCreateUser({ email: emailArg } = { email: null }): Promise<DBUser> {
+  async findOrCreateUser({ email: emailArg } = { email: null }): Promise<User> {
     const email =
       this.context && this.context.user ? this.context.user.email : emailArg;
     if (!email || !isEmail.validate(email)) return null;
 
-    const response = await this.get<DBUser[]>('users')
+    const response = await this.get<User[]>('users')
 
     let user = response.find(u => u.email === email)
 
     if (!user) {
-      user = await this.put<DBUser>('users', { email })
+      user = await this.put<User>('users', { email })
     }
 
     return user

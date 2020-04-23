@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "services\\trip-service"
+		},
+		{
+			"path": "client"
 		}
 	],
 	"settings": {

@@ -34,7 +34,7 @@ export const resolvers = {
             if (user) return Buffer.from(email).toString("base64")
         },
         bookTrips: async (_, { launchIds }, { dataSources }) => {
-            const results = await dataSources.userAdapter.bookTrips({ launchIds })
+            const results = await dataSources.tripAdapter.bookTrips({ launchIds })
             const launches = await dataSources.launchAdapter.getLaunchesByIds({
                 launchIds,
             })
@@ -52,6 +52,14 @@ export const resolvers = {
         },
         cancelTrip: async (_, { launchId }, { dataSources }) => {
 
+            const success = await dataSources.tripAdapter.cancelTrip({launchId})
+            const launches = dataSources.launchAdapter.getAllLaunches()
+
+            return {
+                success,
+                launches
+            }
+
             throw new Error('not implemented')
         },
     },
@@ -63,22 +71,23 @@ export const resolvers = {
         },
     },
     Launch: {
-        isBooked: async (launch, _, { dataSources }) => {
+        isBooked: async (launch, _, { dataSources, user }) => {
             const trips = await dataSources.tripAdapter.allTrips()
-            return trips.find(t => t.id === launch.id).length > 0
+            return trips.find(t => t.launchId === launch.id.toString() && t.userId === user.id) !== undefined
         },
-        User: {
-            trips: async (_, __, { dataSources }) => {
+    },
+    User: {
+        trips: async (user, __, { dataSources }) => {
 
-                const trips = await dataSources.tripAdapter.allTrips()
+            const trips = await dataSources.tripAdapter.allTrips().filter(t => user.id)
 
-                if (!trips.length) return []
+            if (!trips.length) return []
 
-                return (
-                    dataSources.launchAdapter.getLaunchesByIds({
-                        ...trips.map(t => t.id),
-                    }) || []
-                )
-            },
+            return (
+                dataSources.launchAdapter.getLaunchesByIds({
+                    ...trips.map(t => t.id),
+                }) || []
+            )
         },
-    }
+    },
+}
